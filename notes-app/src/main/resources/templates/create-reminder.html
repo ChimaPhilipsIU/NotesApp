@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>New Reminder</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --bg: #f5f0e8;
+            --surface: #fffdf7;
+            --ink: #1a1814;
+            --ink-muted: #6b6560;
+            --reminder: #2a6bc8;
+            --border: #e0d9ce;
+        }
+
+        body {
+            background: var(--bg);
+            font-family: 'DM Sans', sans-serif;
+            color: var(--ink);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        header {
+            display: flex;
+            align-items: center;
+            padding: 1.5rem 2rem;
+            gap: 1rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .back-btn {
+            text-decoration: none;
+            color: var(--ink-muted);
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            transition: color 0.15s;
+        }
+
+        .back-btn:hover { color: var(--ink); }
+        .back-btn::before { content: '←'; font-size: 1.1rem; }
+
+        header h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.4rem;
+            font-weight: 600;
+        }
+
+        .editor {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            max-width: 860px;
+            width: 100%;
+            margin: 0 auto;
+            padding: 2.5rem 2rem;
+            gap: 1.5rem;
+        }
+
+        .field {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .field label {
+            font-size: 0.8rem;
+            font-weight: 500;
+            color: var(--ink-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .title-input {
+            font-family: 'Playfair Display', serif;
+            font-size: 2rem;
+            font-weight: 600;
+            border: none;
+            background: transparent;
+            outline: none;
+            color: var(--ink);
+            width: 100%;
+            border-bottom: 2px solid var(--border);
+            padding-bottom: 0.75rem;
+            transition: border-color 0.2s;
+        }
+
+        .title-input:focus { border-bottom-color: var(--reminder); }
+        .title-input::placeholder { color: var(--border); }
+
+        .text-input {
+            font-family: 'DM Sans', sans-serif;
+            font-size: 1rem;
+            line-height: 1.8;
+            border: 1px solid var(--border);
+            background: var(--surface);
+            outline: none;
+            color: var(--ink);
+            width: 100%;
+            resize: none;
+            border-radius: 8px;
+            padding: 0.75rem 1rem;
+            transition: border-color 0.2s;
+        }
+
+        .text-input:focus { border-color: var(--reminder); }
+        .text-input::placeholder { color: var(--border); }
+
+        .date-input {
+            font-family: 'DM Sans', sans-serif;
+            font-size: 0.95rem;
+            border: 1px solid var(--border);
+            background: var(--surface);
+            outline: none;
+            color: var(--ink);
+            padding: 0.65rem 1rem;
+            border-radius: 8px;
+            width: fit-content;
+            transition: border-color 0.2s;
+        }
+
+        .date-input:focus { border-color: var(--reminder); }
+
+        .save-btn {
+            align-self: flex-end;
+            background: var(--reminder);
+            color: white;
+            border: none;
+            padding: 0.65rem 1.75rem;
+            border-radius: 6px;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 0.9rem;
+            font-weight: 500;
+            cursor: pointer;
+            box-shadow: 0 4px 14px rgba(42,107,200,0.3);
+            transition: opacity 0.15s, transform 0.15s;
+        }
+
+        .save-btn:hover { opacity: 0.9; transform: translateY(-1px); }
+    </style>
+</head>
+<body>
+
+<header>
+    <a th:href="@{/notes}" class="back-btn">Back</a>
+    <h1>New Reminder</h1>
+</header>
+
+<form th:action="@{/reminders/create}" th:object="${reminder}" method="post" class="editor">
+
+    <div class="field">
+        <input
+            class="title-input"
+            type="text"
+            th:field="*{title}"
+            placeholder="Reminder title..."
+            autocomplete="off"
+        />
+    </div>
+
+    <div class="field">
+        <label>Content</label>
+        <textarea
+            class="text-input"
+            th:field="*{content}"
+            placeholder="What do you need to remember?"
+            rows="5"
+        ></textarea>
+    </div>
+
+    <div class="field">
+        <label>Due Date</label>
+        <input
+            class="date-input"
+            type="datetime-local"
+            th:field="*{dueDate}"
+        />
+    </div>
+
+    <button type="submit" class="save-btn">Save Reminder</button>
+
+</form>
+
+</body>
+</html>

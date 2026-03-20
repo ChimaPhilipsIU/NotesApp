@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Edit Note</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --bg: #f5f0e8;
+            --surface: #fffdf7;
+            --ink: #1a1814;
+            --ink-muted: #6b6560;
+            --accent: #540bdb;
+            --danger: #390678;
+            --border: #e0d9ce;
+        }
+
+        body {
+            background: var(--bg);
+            font-family: 'DM Sans', sans-serif;
+            color: var(--ink);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        header {
+            display: flex;
+            align-items: center;
+            padding: 1.5rem 2rem;
+            gap: 1rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .back-btn {
+            text-decoration: none;
+            color: var(--ink-muted);
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            transition: color 0.15s;
+        }
+
+        .back-btn:hover { color: var(--ink); }
+        .back-btn::before { content: '←'; font-size: 1.1rem; }
+
+        header h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.4rem;
+            font-weight: 600;
+        }
+
+        .header-actions {
+            margin-left: auto;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .delete-btn {
+            background: none;
+            border: 1px solid var(--border);
+            color: var(--ink-muted);
+            padding: 0.45rem 1rem;
+            border-radius: 6px;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 0.82rem;
+            cursor: pointer;
+            transition: border-color 0.15s, color 0.15s;
+        }
+
+        .delete-btn:hover {
+            border-color: var(--danger);
+            color: var(--danger);
+        }
+
+        .editor {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            max-width: 860px;
+            width: 100%;
+            margin: 0 auto;
+            padding: 2.5rem 2rem;
+            gap: 1.25rem;
+        }
+
+        .title-input {
+            font-family: 'Playfair Display', serif;
+            font-size: 2rem;
+            font-weight: 600;
+            border: none;
+            background: transparent;
+            outline: none;
+            color: var(--ink);
+            width: 100%;
+            border-bottom: 2px solid var(--border);
+            padding-bottom: 0.75rem;
+            transition: border-color 0.2s;
+        }
+
+        .title-input:focus { border-bottom-color: var(--accent); }
+        .title-input::placeholder { color: var(--border); }
+
+        .content-input {
+            font-family: 'DM Sans', sans-serif;
+            font-size: 1rem;
+            line-height: 1.8;
+            border: none;
+            background: transparent;
+            outline: none;
+            color: var(--ink);
+            width: 100%;
+            resize: none;
+            flex: 1;
+            min-height: 400px;
+        }
+
+        .content-input::placeholder { color: var(--border); }
+
+        .save-btn {
+            align-self: flex-end;
+            background: var(--accent);
+            color: white;
+            border: none;
+            padding: 0.65rem 1.75rem;
+            border-radius: 6px;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 0.9rem;
+            font-weight: 500;
+            cursor: pointer;
+            box-shadow: 0 4px 14px rgba(59, 9, 221, 0.3);
+            transition: opacity 0.15s, transform 0.15s;
+        }
+
+        .save-btn:hover { opacity: 0.9; transform: translateY(-1px); }
+    </style>
+</head>
+<body>
+
+<header>
+    <a th:href="@{/notes}" class="back-btn">Back</a>
+    <h1>Edit Note</h1>
+    <div class="header-actions">
+        <!-- Delete form — POST with hidden method override for DELETE -->
+        <form th:action="@{/notes/{id}/delete(id=${note.id})}" method="post" style="display:inline">
+            <input type="hidden" name="_method" value="delete"/>
+            <button type="submit" class="delete-btn">Delete</button>
+        </form>
+    </div>
+</header>
+
+<form th:action="@{/notes/{id}/edit(id=${note.id})}" th:object="${note}" method="post" class="editor">
+    <input
+        class="title-input"
+        type="text"
+        th:field="*{title}"
+        placeholder="Note title..."
+        autocomplete="off"
+    />
+    <textarea
+        class="content-input"
+        th:field="*{content}"
+        placeholder="Start writing..."
+    ></textarea>
+    <button type="submit" class="save-btn">Save Changes</button>
+</form>
+
+</body>
+</html>

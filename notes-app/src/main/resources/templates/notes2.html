@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Notes</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --bg: #f5f0e8;
+            --surface: #fffdf7;
+            --ink: #1a1814;
+            --ink-muted: #6b6560;
+            --accent: #540bdb;
+            --border: #e0d9ce;
+            --shadow: 0 2px 12px rgba(0,0,0,0.08);
+        }
+
+        body {
+            background: var(--bg);
+            font-family: 'DM Sans', sans-serif;
+            color: var(--ink);
+            min-height: 100vh;
+        }
+
+        header {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem 2rem 1rem;
+            position: relative;
+        }
+
+        header h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 2rem;
+            font-weight: 600;
+            letter-spacing: -0.02em;
+        }
+
+        .add-btn {
+            position: absolute;
+            right: 2rem;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: var(--accent);
+            color: white;
+            border: none;
+            font-size: 1.6rem;
+            line-height: 1;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            box-shadow: 0 4px 14px rgba(59, 9, 221, 0.3);
+            transition: transform 0.15s ease, box-shadow 0.15s ease;
+        }
+
+        .add-btn:hover {
+            transform: translateY(-50%) scale(1.08);
+            box-shadow: 0 6px 20px rgba(59, 9, 221, 0.3);
+        }
+
+        .divider {
+            height: 1px;
+            background: var(--border);
+            margin: 0 2rem;
+        }
+
+        .notes-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 1.25rem;
+            padding: 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        @media (max-width: 1100px) { .notes-grid { grid-template-columns: repeat(3, 1fr); } }
+        @media (max-width: 700px)  { .notes-grid { grid-template-columns: repeat(2, 1fr); } }
+        @media (max-width: 480px)  { .notes-grid { grid-template-columns: 1fr; } }
+
+        .note-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 1.25rem;
+            min-height: 160px;
+            cursor: pointer;
+            text-decoration: none;
+            color: inherit;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            box-shadow: var(--shadow);
+            transition: transform 0.15s ease, box-shadow 0.15s ease;
+        }
+
+        .note-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+        }
+
+        .note-card h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1rem;
+            font-weight: 600;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .note-card p {
+            font-size: 0.82rem;
+            color: var(--ink-muted);
+            line-height: 1.5;
+            overflow: hidden;
+            display: -webkit-box;
+            -webkit-line-clamp: 4;
+            -webkit-box-orient: vertical;
+            flex: 1;
+        }
+
+        .note-card .date {
+            font-size: 0.72rem;
+            color: var(--ink-muted);
+            margin-top: auto;
+        }
+
+        .empty-state {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 5rem 2rem;
+            color: var(--ink-muted);
+        }
+
+        .empty-state p {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .empty-state span {
+            font-size: 0.85rem;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>My Notes</h1>
+    <a th:href="@{/notes/create}" class="add-btn" title="New Note">+</a>
+</header>
+<div class="divider"></div>
+
+<main class="notes-grid">
+
+    <!-- Thymeleaf will loop over notes here in a later sprint -->
+    <!-- th:each="note : ${notes}" -->
+
+    <a th:each="note : ${notes}" th:href="@{/notes/{id}/edit(id=${note.id})}" class="note-card">
+        <h2 th:text="${note.title}">Note Title</h2>
+        <p th:text="${note.content}">Note preview content goes here...</p>
+        <span class="date" th:text="${note.title}">Jan 1, 2025</span>
+    </a>
+
+    <!-- Empty state shown when there are no notes -->
+    <div class="empty-state" th:if="${#lists.isEmpty(notes)}">
+        <p>No notes yet.</p>
+        <span>Click the + button to create your first one.</span>
+    </div>
+
+</main>
+
+</body>
+</html>

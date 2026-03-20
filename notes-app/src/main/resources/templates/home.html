@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Lato:wght@300;400&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --cream: #F5F0E8;
+            --ink: #1C1C1C;
+            --rust: #540bdb;
+            --paper: #EDE8DC;
+            --shadow: rgba(28, 28, 28, 0.12);
+        }
+
+        body {
+            background-color: var(--cream);
+            font-family: 'Lato', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        /* Subtle paper texture lines */
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background-image: repeating-linear-gradient(
+                transparent,
+                transparent 31px,
+                rgba(28, 28, 28, 0.06) 31px,
+                rgba(28, 28, 28, 0.06) 32px
+            );
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .card {
+            position: relative;
+            z-index: 1;
+            background: var(--paper);
+            border: 1px solid rgba(28, 28, 28, 0.15);
+            box-shadow: 6px 6px 0px var(--ink), 12px 12px 0px rgba(28,28,28,0.08);
+            padding: 64px 72px;
+            max-width: 560px;
+            width: 90%;
+            text-align: center;
+            animation: rise 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+        }
+
+        @keyframes rise {
+            from {
+                opacity: 0;
+                transform: translateY(24px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .card::before {
+            content: '✦';
+            display: block;
+            font-size: 1.2rem;
+            color: var(--rust);
+            margin-bottom: 24px;
+            animation: rise 0.6s 0.1s cubic-bezier(0.16, 1, 0.3, 1) both;
+        }
+
+        h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(1.8rem, 5vw, 2.6rem);
+            font-weight: 700;
+            color: var(--ink);
+            line-height: 1.2;
+            margin-bottom: 12px;
+            animation: rise 0.6s 0.15s cubic-bezier(0.16, 1, 0.3, 1) both;
+        }
+
+        .divider {
+            width: 48px;
+            height: 2px;
+            background: var(--rust);
+            margin: 20px auto;
+            animation: rise 0.6s 0.2s cubic-bezier(0.16, 1, 0.3, 1) both;
+        }
+
+        p {
+            font-size: 0.95rem;
+            color: rgba(28, 28, 28, 0.6);
+            font-weight: 300;
+            letter-spacing: 0.02em;
+            margin-bottom: 40px;
+            animation: rise 0.6s 0.25s cubic-bezier(0.16, 1, 0.3, 1) both;
+        }
+
+        .btn {
+            display: inline-block;
+            background: var(--ink);
+            color: var(--cream);
+            font-family: 'Lato', sans-serif;
+            font-size: 0.85rem;
+            font-weight: 400;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            text-decoration: none;
+            padding: 14px 36px;
+            border: 2px solid var(--ink);
+            cursor: pointer;
+            transition: background 0.2s, color 0.2s, transform 0.15s, box-shadow 0.15s;
+            animation: rise 0.6s 0.3s cubic-bezier(0.16, 1, 0.3, 1) both;
+        }
+
+        .btn:hover {
+            background: var(--rust);
+            border-color: var(--rust);
+            transform: translate(-2px, -2px);
+            box-shadow: 4px 4px 0px var(--ink);
+        }
+
+        .btn:active {
+            transform: translate(0, 0);
+            box-shadow: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h1>Welcome to The Note Taking App!</h1>
+        <div class="divider"></div>
+        <p>Capture your thoughts, ideas, and everything in between.</p>
+        <a th:href="@{/notes}" href="/notes" class="btn">View Notes</a>
+    </div>
+</body>
+</html>
