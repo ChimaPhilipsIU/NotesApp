@@ -10,6 +10,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.config.annotation.web.configurers.CsrfConfigurer;
+
 
 
 @Configuration
@@ -21,6 +23,7 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
     http
         .authorizeHttpRequests((requests) -> requests
+            .requestMatchers("/h2-console/**").permitAll()
             .requestMatchers("/", "/home").permitAll()
             .anyRequest().authenticated()
         )
@@ -28,7 +31,13 @@ public class SecurityConfig {
             .defaultSuccessUrl("/notes", true)
             .permitAll()
         )
-        .logout(LogoutConfigurer::permitAll);
+        .logout(LogoutConfigurer::permitAll)
+        .csrf(csrf -> csrf
+            .ignoringRequestMatchers("/h2-console/**")
+        )
+        .headers(headers -> headers
+            .frameOptions(frame -> frame.disable())
+        );
 
     return http.build();  
 }

@@ -1,17 +1,17 @@
 package com.example.notes_app.controller;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.example.notes_app.model.Reminder;
 import com.example.notes_app.service.ReminderService;
 
-import java.util.List;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
 
 
 
@@ -62,6 +62,21 @@ public class ReminderController {
     @ResponseBody
     public Iterable<Reminder> searchReminders(@RequestParam String keyword){
         return reminderService.searchReminders(keyword);
+
+}
+
+@PostMapping("/reminders/{id}/folder")
+public ResponseEntity<Void> updateReminderFolder(@PathVariable Long id, @RequestParam String folder) {
+    Reminder reminder = reminderService.getReminderById(id);
+    reminder.setFolder(folder);
+    reminderService.updateReminder(reminder);
+    return ResponseEntity.ok().build();
+}
+
+@GetMapping("/reminders/{id}/json")
+@ResponseBody
+public Reminder getReminderJson(@PathVariable Long id) {
+    return reminderService.getReminderById(id);
 }
 }
 

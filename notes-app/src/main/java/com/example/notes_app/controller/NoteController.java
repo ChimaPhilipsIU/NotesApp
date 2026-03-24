@@ -1,18 +1,17 @@
 package com.example.notes_app.controller;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.example.notes_app.model.Note;
 import com.example.notes_app.service.NoteService;
 import com.example.notes_app.service.ReminderService;
-
-import java.util.List;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
 
 
 @Controller
@@ -76,6 +75,22 @@ public class NoteController {
     @GetMapping("/")
     public String index() {
         return "redirect:/notes";
+}
+
+@PostMapping("/notes/{id}/folder")
+public ResponseEntity<Void> updateNoteFolder(@PathVariable Long id, @RequestParam String folder) {
+    Note note = noteService.getNoteById(id);
+    note.setFolder(folder);
+    noteService.updateNote(note);
+    return ResponseEntity.ok().build();
+}
+
+
+
+@GetMapping("/notes/{id}/json")
+@ResponseBody
+public Note getNoteJson(@PathVariable Long id) {
+    return noteService.getNoteById(id);
 }
 }
 

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>New Note</title>
+    <title>Edit Reminder</title>
     <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&display=swap" rel="stylesheet"/>
     <style>
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -20,6 +20,9 @@
             --border: #222;
             --border-bright: #333;
             --shadow: 0 4px 24px rgba(0,0,0,0.5);
+            --reminder: #3a7bd5;
+            --reminder-soft: rgba(58,123,213,0.07);
+            --reminder-glow: rgba(58,123,213,0.22);
             --grain: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
         }
 
@@ -51,7 +54,7 @@
             left: 2.5rem;
             width: 60px;
             height: 2px;
-            background: var(--accent);
+            background: var(--reminder);
         }
 
         .back-btn {
@@ -68,12 +71,7 @@
         }
 
         .back-btn:hover { color: var(--ink); }
-
-        .back-btn::before {
-            content: '←';
-            font-size: 1rem;
-            font-style: normal;
-        }
+        .back-btn::before { content: '←'; font-size: 1rem; }
 
         header h1 {
             font-family: 'Cormorant Garamond', Georgia, serif;
@@ -84,12 +82,31 @@
             color: var(--ink);
         }
 
-        .save-status {
+        .header-actions {
             margin-left: auto;
-            font-size: 0.72rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .delete-btn {
+            background: none;
+            border: 1px solid var(--border);
             color: var(--ink-muted);
-            font-style: italic;
-            letter-spacing: 0.08em;
+            padding: 0.4rem 1.1rem;
+            border-radius: 2px;
+            font-family: 'EB Garamond', Georgia, serif;
+            font-size: 0.78rem;
+            font-weight: 500;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: border-color 0.15s, color 0.15s;
+        }
+
+        .delete-btn:hover {
+            border-color: var(--accent);
+            color: var(--accent);
         }
 
         /* ── EDITOR ── */
@@ -117,36 +134,70 @@
             width: 100%;
             border-bottom: 1px solid var(--border);
             padding-bottom: 1rem;
-            margin-bottom: 2rem;
+            margin-bottom: 2.5rem;
             transition: border-color 0.2s;
         }
 
-        .title-input:focus { border-bottom-color: var(--accent); }
-
-        .title-input::placeholder {
-            color: var(--ink-muted);
-            font-style: italic;
-        }
+        .title-input:focus { border-bottom-color: var(--reminder); }
+        .title-input::placeholder { color: var(--ink-muted); font-style: italic; }
 
         /* Content */
+        .field {
+            display: flex;
+            flex-direction: column;
+            gap: 0.6rem;
+            margin-bottom: 2rem;
+        }
+
+        .field label {
+            font-size: 0.68rem;
+            font-weight: 500;
+            color: var(--ink-muted);
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+        }
+
         .content-input {
             font-family: 'EB Garamond', Georgia, serif;
             font-size: 1.05rem;
             line-height: 1.9;
-            border: none;
-            background: transparent;
+            border: 1px solid var(--border);
+            background: var(--surface2);
             outline: none;
             color: var(--ink);
             width: 100%;
             resize: none;
-            flex: 1;
-            min-height: 420px;
-            margin-bottom: 2.5rem;
+            min-height: 300px;
+            border-radius: 2px;
+            padding: 1rem 1.25rem;
+            transition: border-color 0.2s, box-shadow 0.2s;
         }
 
-        .content-input::placeholder {
-            color: var(--ink-muted);
-            font-style: italic;
+        .content-input:focus {
+            border-color: var(--reminder);
+            box-shadow: 0 0 0 3px var(--reminder-soft);
+        }
+
+        .content-input::placeholder { color: var(--ink-muted); font-style: italic; }
+
+        /* Due date */
+        .due-input {
+            font-family: 'EB Garamond', Georgia, serif;
+            font-size: 0.95rem;
+            border: 1px solid var(--border);
+            background: var(--surface2);
+            outline: none;
+            color: var(--ink);
+            padding: 0.65rem 1rem;
+            border-radius: 2px;
+            width: fit-content;
+            transition: border-color 0.2s, box-shadow 0.2s;
+            color-scheme: dark;
+        }
+
+        .due-input:focus {
+            border-color: var(--reminder);
+            box-shadow: 0 0 0 3px var(--reminder-soft);
         }
 
         /* Folder */
@@ -159,10 +210,7 @@
             margin-bottom: 2rem;
         }
 
-        .folder-icon {
-            font-size: 0.85rem;
-            color: var(--ink-muted);
-        }
+        .folder-icon { font-size: 0.85rem; color: var(--ink-muted); }
 
         .folder-input {
             font-family: 'EB Garamond', Georgia, serif;
@@ -177,16 +225,12 @@
         }
 
         .folder-input:focus { color: var(--ink); }
-
-        .folder-input::placeholder {
-            color: var(--ink-muted);
-            font-style: italic;
-        }
+        .folder-input::placeholder { color: var(--ink-muted); font-style: italic; }
 
         /* Save button */
         .save-btn {
             align-self: flex-end;
-            background: var(--accent);
+            background: var(--reminder);
             color: var(--ink);
             border: none;
             padding: 0.65rem 2rem;
@@ -197,59 +241,59 @@
             letter-spacing: 0.14em;
             text-transform: uppercase;
             cursor: pointer;
-            box-shadow: 0 0 20px var(--accent-glow);
+            box-shadow: 0 0 20px var(--reminder-glow);
             transition: transform 0.15s, box-shadow 0.15s, opacity 0.15s;
         }
 
         .save-btn:hover {
             transform: translateY(-2px);
-            box-shadow: 0 0 32px var(--accent-glow);
-        }
-
-        /* Decorative rule */
-        .divider {
-            width: 100%;
-            height: 1px;
-            background: var(--border);
-            margin-bottom: 2rem;
-            position: relative;
-        }
-
-        .divider::before {
-            content: '✦';
-            position: absolute;
-            left: 50%;
-            top: 50%;
-            transform: translate(-50%, -50%);
-            background: var(--bg);
-            padding: 0 0.75rem;
-            font-size: 0.55rem;
-            color: var(--ink-muted);
-            letter-spacing: 0.2em;
+            box-shadow: 0 0 32px var(--reminder-glow);
+            opacity: 0.9;
         }
     </style>
 </head>
 <body>
 
 <header>
-    <a th:href="@{/notes}" class="back-btn">Back</a>
-    <h1>New Note</h1>
-    <span class="save-status" id="saveStatus"></span>
+    <a th:href="@{/reminders}" class="back-btn">Back</a>
+    <h1>Edit Reminder</h1>
+    <div class="header-actions">
+        <form th:action="@{/reminders/{id}/delete(id=${reminder.id})}" method="post" style="display:inline">
+            <input type="hidden" name="_method" value="delete"/>
+            <button type="submit" class="delete-btn">&#128465; Delete</button>
+        </form>
+    </div>
 </header>
 
-<form th:action="@{/notes/create}" th:object="${note}" method="post" class="editor">
+<form th:action="@{/reminders/{id}/edit(id=${reminder.id})}" th:object="${reminder}" method="post" class="editor">
+
     <input
         class="title-input"
         type="text"
         th:field="*{title}"
-        placeholder="Note title..."
+        placeholder="Reminder title..."
         autocomplete="off"
     />
-    <textarea
-        class="content-input"
-        th:field="*{content}"
-        placeholder="Start writing..."
-    ></textarea>
+
+    <div class="field">
+        <label>Content</label>
+        <textarea
+            class="content-input"
+            th:field="*{content}"
+            placeholder="Add details..."
+            rows="6"
+        ></textarea>
+    </div>
+
+    <div class="field">
+        <label>Due Date</label>
+        <input
+            class="due-input"
+            type="datetime-local"
+            th:field="*{dueDate}"
+        />
+    </div>
+
     <div class="folder-row">
         <span class="folder-icon">📁</span>
         <input
@@ -260,7 +304,9 @@
             autocomplete="off"
         />
     </div>
-    <button type="submit" class="save-btn">Save Note</button>
+
+    <button type="submit" class="save-btn">Save Changes</button>
+
 </form>
 
 </body>

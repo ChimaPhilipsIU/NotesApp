@@ -1,13 +1,16 @@
 CREATE TABLE IF NOT EXISTS NOTES (
     id INTEGER PRIMARY KEY AUTO_INCREMENT,
     title VARCHAR(255),
-    content TEXT
+    content TEXT,
+    created_at TIMESTAMP,
+    folder VARCHAR(255)
 );
-
 
 CREATE TABLE IF NOT EXISTS REMINDERS (
     id INTEGER PRIMARY KEY AUTO_INCREMENT,
     title VARCHAR(255),
     content TEXT,
-    due_date TIMESTAMP
+    due_date TIMESTAMP,
+    created_at TIMESTAMP,
+    folder VARCHAR(255)
 );

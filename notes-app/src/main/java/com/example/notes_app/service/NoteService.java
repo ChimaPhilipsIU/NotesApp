@@ -6,6 +6,9 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+
+
 import com.example.notes_app.model.Note;
 import com.example.notes_app.repository.NoteRepository;
 
@@ -32,6 +35,7 @@ public class NoteService {
     // 4. Create a new note
     //    Called when the user submits the create note form
     public void createNote(Note note) {
+        note.setCreatedAt(LocalDateTime.now());
         noteRepository.save(note);
     }
 

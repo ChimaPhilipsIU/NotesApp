@@ -1,5 +1,10 @@
 package com.example.notes_app.model;
 
+
+import java.time.LocalDateTime;
+
+
+
 import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Table;
 
@@ -12,6 +17,10 @@ public class Note {
     private String title;
 
     private String content;
+
+    private LocalDateTime createdAt;
+
+    private String folder;
 
     public Long getId() {
         return id;
@@ -36,4 +45,20 @@ public class Note {
     public void setContent(String content) {
         this.content = content;
     }
+
+    public LocalDateTime getCreatedAt(){
+        return createdAt;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt){
+        this.createdAt = createdAt;
+    }
+
+    public String getFolder() { 
+        return folder; 
+        }
+    
+    public void setFolder(String folder) {
+         this.folder = folder; 
+         }
 }

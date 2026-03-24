@@ -1,6 +1,9 @@
 package com.example.notes_app.service;
 
 import java.util.ArrayList;
+
+import java.time.LocalDateTime;
+
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,12 +19,16 @@ public class ReminderService {
     private ReminderRepository reminderRepository;
 
     // 2. Get all notes
-    //    Returns a list of all reminder to display
+    //    Returns a list of all reminder to display. Only displays reminders with due dates not yet passed.
     public List<Reminder> getAllReminders() {
-        List<Reminder> reminders = new ArrayList<>();
-        reminderRepository.findAll().forEach(reminders::add);
-        return reminders;
-    }
+    List<Reminder> active = new ArrayList<>();
+    reminderRepository.findAll().forEach(reminder -> {
+        if (reminder.getDueDate() == null || reminder.getDueDate().isAfter(LocalDateTime.now())) {
+            active.add(reminder);
+        }
+    });
+    return active;
+}
 
     // 3. Get a single reminder by its ID
     //    Used when a user clicks on a reminder to edit it
@@ -32,6 +39,7 @@ public class ReminderService {
     // 4. Create a new reminder
     //    Called when the user submits the create reminder form
     public void createReminder(Reminder reminder) {
+        reminder.setCreatedAt(LocalDateTime.now());
         reminderRepository.save(reminder);
     }
 

@@ -4,342 +4,162 @@
     <meta charset="UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>Notes</title>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+    <meta name="_csrf" th:content="${_csrf.token}"/>
+    <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+    <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&display=swap" rel="stylesheet"/>
     <style>
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
         :root {
-            --bg: #f5f0e8;
-            --surface: #fffdf7;
-            --ink: #1a1814;
-            --ink-muted: #6b6560;
-            --accent: #c8502a;
-            --accent-soft: rgba(200,80,42,0.08);
-            --border: #e0d9ce;
-            --shadow: 0 2px 12px rgba(0,0,0,0.08);
-            --reminder: #2a6bc8;
-            --reminder-soft: rgba(42,107,200,0.08);
+            --bg: #080808;
+            --surface: #0e0e0e;
+            --surface2: #141414;
+            --ink: #f0ece4;
+            --ink-muted: #6b6357;
+            --accent: #c82a2a;
+            --accent-soft: rgba(200,42,42,0.07);
+            --accent-glow: rgba(200,42,42,0.18);
+            --border: #222;
+            --border-bright: #333;
+            --shadow: 0 4px 24px rgba(0,0,0,0.5);
+            --reminder: #3a7bd5;
+            --reminder-soft: rgba(58,123,213,0.07);
+            --grain: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
         }
 
-        body {
-            background: var(--bg);
-            font-family: 'DM Sans', sans-serif;
-            color: var(--ink);
-            min-height: 100vh;
-        }
+        body { background: var(--bg); background-image: var(--grain); font-family: 'EB Garamond', Georgia, serif; color: var(--ink); min-height: 100vh; }
 
-        /* ── HEADER ── */
-        header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 1.5rem 2rem;
-            border-bottom: 1px solid var(--border);
-        }
+        header { display: flex; align-items: center; justify-content: space-between; padding: 1.75rem 2.5rem; border-bottom: 1px solid var(--border); background: var(--surface); position: relative; }
+        header::after { content: ''; position: absolute; bottom: -1px; left: 2.5rem; width: 60px; height: 2px; background: var(--accent); }
+        header h1 { font-family: 'Cormorant Garamond', Georgia, serif; font-size: 2rem; font-weight: 300; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink); }
+        .header-clock { display: flex; flex-direction: column; align-items: center; font-family: 'EB Garamond', Georgia, serif; border-left: 1px solid var(--border); border-right: 1px solid var(--border); padding: 0 2rem; }
+        .clock-time { font-size: 1.6rem; font-weight: 400; color: var(--ink); letter-spacing: 0.08em; line-height: 1; }
+        .clock-date { font-size: 0.72rem; color: var(--ink-muted); margin-top: 0.25rem; letter-spacing: 0.15em; text-transform: uppercase; }
+        .add-btn { width: 42px; height: 42px; border-radius: 2px; background: var(--accent); color: var(--ink); border: none; font-size: 1.5rem; font-family: 'EB Garamond', serif; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 0 20px var(--accent-glow); transition: transform 0.15s ease, box-shadow 0.15s ease; }
+        .add-btn:hover { transform: scale(1.06); box-shadow: 0 0 32px var(--accent-glow); }
 
-        header h1 {
-            font-family: 'Playfair Display', serif;
-            font-size: 1.8rem;
-            font-weight: 600;
-            letter-spacing: -0.02em;
-        }
-
-        .add-btn {
-            width: 44px;
-            height: 44px;
-            border-radius: 50%;
-            background: var(--accent);
-            color: white;
-            border: none;
-            font-size: 1.6rem;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 4px 14px rgba(200,80,42,0.35);
-            transition: transform 0.15s ease, box-shadow 0.15s ease;
-        }
-
-        .add-btn:hover {
-            transform: scale(1.08);
-            box-shadow: 0 6px 20px rgba(200,80,42,0.45);
-        }
-
-        /* ── TABS ── */
-        .tabs {
-            display: flex;
-            padding: 0 2rem;
-            border-bottom: 1px solid var(--border);
-            background: var(--surface);
-        }
-
-        .tab-btn {
-            background: none;
-            border: none;
-            padding: 1rem 1.5rem;
-            font-family: 'DM Sans', sans-serif;
-            font-size: 0.88rem;
-            font-weight: 500;
-            color: var(--ink-muted);
-            cursor: pointer;
-            border-bottom: 2px solid transparent;
-            margin-bottom: -1px;
-            transition: color 0.15s, border-color 0.15s;
-        }
-
+        .tabs { display: flex; padding: 0 2.5rem; border-bottom: 1px solid var(--border); background: var(--surface); }
+        .tab-btn { background: none; border: none; padding: 1rem 1.5rem; font-family: 'EB Garamond', Georgia, serif; font-size: 0.85rem; font-weight: 500; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-muted); cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -1px; transition: color 0.15s, border-color 0.15s; }
         .tab-btn.active { color: var(--accent); border-bottom-color: var(--accent); }
         .tab-btn.reminders-tab.active { color: var(--reminder); border-bottom-color: var(--reminder); }
-
-        /* ── TAB PANELS ── */
         .tab-panel { display: none; }
         .tab-panel.active { display: block; }
 
-        /* ── NOTES GRID ── */
-        .notes-grid {
-            display: grid;
-            grid-template-columns: repeat(5, 1fr);
-            gap: 1.25rem;
-            padding: 2rem;
-            max-width: 1400px;
-            margin: 0 auto;
-        }
-
-        @media (max-width: 1100px) { .notes-grid { grid-template-columns: repeat(3, 1fr); } }
+        .notes-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 1rem; padding: 2rem 2.5rem; max-width: 1500px; margin: 0 auto; }
+        @media (max-width: 1200px) { .notes-grid { grid-template-columns: repeat(3, 1fr); } }
         @media (max-width: 700px)  { .notes-grid { grid-template-columns: repeat(2, 1fr); } }
         @media (max-width: 480px)  { .notes-grid { grid-template-columns: 1fr; } }
 
-        .note-card {
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: 10px;
-            padding: 1.25rem;
-            min-height: 160px;
-            cursor: pointer;
-            text-decoration: none;
-            color: inherit;
-            display: flex;
-            flex-direction: column;
-            gap: 0.5rem;
-            box-shadow: var(--shadow);
-            transition: transform 0.15s ease, box-shadow 0.15s ease;
-        }
+        .note-card { background: var(--surface); border: 1px solid var(--border); border-radius: 2px; padding: 1.4rem; min-height: 170px; cursor: pointer; text-decoration: none; color: inherit; display: flex; flex-direction: column; gap: 0.6rem; box-shadow: var(--shadow); transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease; position: relative; }
+        .note-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: var(--accent); transform: scaleX(0); transform-origin: left; transition: transform 0.25s ease; }
+        .note-card:hover { transform: translateY(-4px); box-shadow: 0 12px 40px rgba(0,0,0,0.6), 0 0 20px var(--accent-glow); border-color: var(--border-bright); }
+        .note-card:hover::before { transform: scaleX(1); }
+        .note-card h2 { font-family: 'Cormorant Garamond', Georgia, serif; font-size: 1.05rem; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; letter-spacing: 0.01em; color: var(--ink); }
+        .note-card p { font-size: 0.85rem; color: var(--ink-muted); line-height: 1.6; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; flex: 1; font-style: italic; }
 
-        .note-card:hover { transform: translateY(-3px); box-shadow: 0 8px 24px rgba(0,0,0,0.12); }
+        .reminders-list { display: flex; flex-direction: column; gap: 0.75rem; padding: 2rem 2.5rem; max-width: 900px; margin: 0 auto; }
+        .reminder-card { background: var(--surface); border: 1px solid var(--border); border-left: 3px solid var(--reminder); border-radius: 2px; padding: 1.25rem 1.5rem; box-shadow: var(--shadow); position: relative; transition: border-color 0.2s, box-shadow 0.2s; }
+        .reminder-card:hover { border-color: var(--border-bright); box-shadow: 0 8px 32px rgba(0,0,0,0.5); }
+        .reminder-card h3 { font-family: 'Cormorant Garamond', Georgia, serif; font-size: 1.05rem; font-weight: 600; margin-bottom: 0.3rem; letter-spacing: 0.01em; }
+        .reminder-card p { font-size: 0.85rem; color: var(--ink-muted); line-height: 1.6; font-style: italic; }
+        .reminder-due { font-size: 0.7rem; color: var(--reminder); font-weight: 500; margin-top: 0.4rem; letter-spacing: 0.08em; text-transform: uppercase; }
 
-        .note-card h2 {
-            font-family: 'Playfair Display', serif;
-            font-size: 1rem;
-            font-weight: 600;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
+        .empty-state { text-align: center; padding: 5rem 2rem; color: var(--ink-muted); grid-column: 1 / -1; }
+        .empty-state p { font-family: 'Cormorant Garamond', Georgia, serif; font-size: 1.3rem; font-style: italic; margin-bottom: 0.5rem; }
+        .empty-state span { font-size: 0.8rem; letter-spacing: 0.1em; text-transform: uppercase; }
 
-        .note-card p {
-            font-size: 0.82rem;
-            color: var(--ink-muted);
-            line-height: 1.5;
-            overflow: hidden;
-            display: -webkit-box;
-            -webkit-line-clamp: 4;
-            -webkit-box-orient: vertical;
-            flex: 1;
-        }
-
-        /* ── REMINDERS LIST ── */
-        .reminders-list {
-            display: flex;
-            flex-direction: column;
-            gap: 1rem;
-            padding: 2rem;
-            max-width: 860px;
-            margin: 0 auto;
-        }
-
-        .reminder-card {
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-left: 4px solid var(--reminder);
-            border-radius: 10px;
-            padding: 1.25rem 1.5rem;
-            box-shadow: var(--shadow);
-        }
-
-        .reminder-card h3 {
-            font-family: 'Playfair Display', serif;
-            font-size: 1rem;
-            margin-bottom: 0.3rem;
-        }
-
-        .reminder-card p { font-size: 0.83rem; color: var(--ink-muted); line-height: 1.5; }
-        .reminder-due { font-size: 0.75rem; color: var(--reminder); font-weight: 500; margin-top: 0.4rem; }
-
-        /* ── EMPTY STATE ── */
-        .empty-state {
-            text-align: center;
-            padding: 5rem 2rem;
-            color: var(--ink-muted);
-            grid-column: 1 / -1;
-        }
-
-        .empty-state p { font-family: 'Playfair Display', serif; font-size: 1.2rem; margin-bottom: 0.5rem; }
-        .empty-state span { font-size: 0.85rem; }
-
-        /* ── OVERLAYS ── */
-        .overlay {
-            display: none;
-            position: fixed;
-            inset: 0;
-            background: rgba(0,0,0,0.45);
-            backdrop-filter: blur(3px);
-            z-index: 100;
-            align-items: center;
-            justify-content: center;
-        }
-
+        .overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.7); backdrop-filter: blur(4px); z-index: 100; align-items: center; justify-content: center; }
         .overlay.visible { display: flex; animation: fadeIn 0.2s ease; }
-
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-        @keyframes slideUp { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(28px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* ── CHOOSER POPUP ── */
-        .chooser {
-            background: var(--surface);
-            border-radius: 16px;
-            padding: 2rem;
-            width: 360px;
-            box-shadow: 0 24px 60px rgba(0,0,0,0.2);
-            animation: slideUp 0.25s ease;
-        }
-
-        .chooser h2 {
-            font-family: 'Playfair Display', serif;
-            font-size: 1.3rem;
-            margin-bottom: 1.25rem;
-            text-align: center;
-        }
-
+        .chooser { background: var(--surface2); border: 1px solid var(--border-bright); border-radius: 4px; padding: 2.5rem; width: 380px; box-shadow: 0 40px 80px rgba(0,0,0,0.8); animation: slideUp 0.25s ease; }
+        .chooser h2 { font-family: 'Cormorant Garamond', Georgia, serif; font-size: 1.4rem; font-weight: 300; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 1.5rem; text-align: center; color: var(--ink); }
         .chooser-options { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
-
-        .chooser-option {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 0.6rem;
-            padding: 1.5rem 1rem;
-            border-radius: 12px;
-            border: 2px solid var(--border);
-            text-decoration: none;
-            color: var(--ink);
-            transition: border-color 0.15s, background 0.15s, transform 0.15s;
-        }
-
+        .chooser-option { display: flex; flex-direction: column; align-items: center; gap: 0.7rem; padding: 1.75rem 1rem; border-radius: 2px; border: 1px solid var(--border); text-decoration: none; color: var(--ink); transition: border-color 0.15s, background 0.15s, transform 0.15s; }
         .chooser-option:hover { transform: translateY(-2px); }
         .chooser-option.note:hover { border-color: var(--accent); background: var(--accent-soft); }
         .chooser-option.reminder:hover { border-color: var(--reminder); background: var(--reminder-soft); }
-        .chooser-option .icon { font-size: 2rem; line-height: 1; }
-        .chooser-option span { font-size: 0.85rem; font-weight: 500; }
+        .chooser-option .icon { font-size: 1.8rem; line-height: 1; }
+        .chooser-option span { font-size: 0.78rem; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; }
+        .chooser-close { display: block; width: 100%; margin-top: 1rem; padding: 0.65rem; background: none; border: 1px solid var(--border); border-radius: 2px; font-family: 'EB Garamond', serif; font-size: 0.8rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-muted); cursor: pointer; transition: border-color 0.15s; }
+        .chooser-close:hover { border-color: var(--border-bright); }
 
-        .chooser-close {
-            display: block;
-            width: 100%;
-            margin-top: 1rem;
-            padding: 0.6rem;
-            background: none;
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            font-family: 'DM Sans', sans-serif;
-            font-size: 0.85rem;
-            color: var(--ink-muted);
-            cursor: pointer;
-        }
-
-        .chooser-close:hover { background: var(--bg); }
-
-        /* ── REMINDER MODAL ── */
-        .reminder-modal {
-            background: var(--surface);
-            border-radius: 16px;
-            padding: 2rem;
-            width: 480px;
-            max-width: 95vw;
-            max-height: 80vh;
-            overflow-y: auto;
-            box-shadow: 0 24px 60px rgba(0,0,0,0.2);
-            animation: slideUp 0.25s ease;
-        }
-
-        .reminder-modal-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 1.25rem;
-        }
-
-        .reminder-modal-header h2 { font-family: 'Playfair Display', serif; font-size: 1.3rem; }
-
-        .modal-close {
-            background: none;
-            border: none;
-            font-size: 1.4rem;
-            color: var(--ink-muted);
-            cursor: pointer;
-            transition: color 0.15s;
-        }
-
+        .reminder-modal { background: var(--surface2); border: 1px solid var(--border-bright); border-radius: 4px; padding: 2rem; width: 500px; max-width: 95vw; max-height: 80vh; overflow-y: auto; box-shadow: 0 40px 80px rgba(0,0,0,0.8); animation: slideUp 0.25s ease; }
+        .reminder-modal-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.5rem; padding-bottom: 1rem; border-bottom: 1px solid var(--border); }
+        .reminder-modal-header h2 { font-family: 'Cormorant Garamond', serif; font-size: 1.3rem; font-weight: 300; letter-spacing: 0.08em; text-transform: uppercase; }
+        .modal-close { background: none; border: none; font-size: 1.2rem; color: var(--ink-muted); cursor: pointer; transition: color 0.15s; line-height: 1; }
         .modal-close:hover { color: var(--ink); }
+        .modal-reminder-item { padding: 1rem 1.25rem; border-left: 2px solid var(--reminder); background: var(--reminder-soft); border-radius: 0 2px 2px 0; margin-bottom: 0.75rem; }
+        .modal-reminder-item h3 { font-family: 'Cormorant Garamond', serif; font-size: 1rem; font-weight: 600; margin-bottom: 0.25rem; }
+        .modal-reminder-item p { font-size: 0.83rem; color: var(--ink-muted); font-style: italic; }
+        .modal-reminder-item .due { font-size: 0.68rem; color: var(--reminder); font-weight: 500; margin-top: 0.3rem; letter-spacing: 0.1em; text-transform: uppercase; }
+        .modal-dismiss { display: block; width: 100%; margin-top: 1.25rem; padding: 0.75rem; background: var(--reminder); color: var(--ink); border: none; border-radius: 2px; font-family: 'EB Garamond', serif; font-size: 0.82rem; font-weight: 500; letter-spacing: 0.12em; text-transform: uppercase; cursor: pointer; transition: opacity 0.15s; }
+        .modal-dismiss:hover { opacity: 0.85; }
 
-        .modal-reminder-item {
-            padding: 1rem;
-            border-left: 3px solid var(--reminder);
-            background: var(--reminder-soft);
-            border-radius: 0 8px 8px 0;
-            margin-bottom: 0.75rem;
-        }
-
-        .modal-reminder-item h3 { font-size: 0.95rem; font-weight: 500; margin-bottom: 0.25rem; }
-        .modal-reminder-item p { font-size: 0.82rem; color: var(--ink-muted); }
-        .modal-reminder-item .due { font-size: 0.75rem; color: var(--reminder); font-weight: 500; margin-top: 0.3rem; }
-
-        .modal-dismiss {
-            display: block;
-            width: 100%;
-            margin-top: 1.25rem;
-            padding: 0.7rem;
-            background: var(--reminder);
-            color: white;
-            border: none;
-            border-radius: 8px;
-            font-family: 'DM Sans', sans-serif;
-            font-size: 0.9rem;
-            font-weight: 500;
-            cursor: pointer;
-        }
-
-        .modal-dismiss:hover { opacity: 0.9; }
-
-        /* ── SEARCH BAR ── */
-        .search-wrapper {
-            padding: 1.25rem 2rem 0;
-            max-width: 1400px;
-            margin: 0 auto;
-        }
-
-        .search-input {
-            width: 100%;
-            padding: 0.7rem 1.1rem;
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            font-family: 'DM Sans', sans-serif;
-            font-size: 0.9rem;
-            background: var(--surface);
-            color: var(--ink);
-            outline: none;
-            transition: border-color 0.15s;
-        }
-
-        .search-input:focus { border-color: var(--accent); }
+        .search-wrapper { padding: 1.5rem 2.5rem 0; max-width: 1500px; margin: 0 auto; }
+        .search-input { width: 100%; padding: 0.75rem 1.25rem; border: 1px solid var(--border); border-radius: 2px; font-family: 'EB Garamond', Georgia, serif; font-size: 1rem; font-style: italic; background: var(--surface2); color: var(--ink); outline: none; transition: border-color 0.15s, box-shadow 0.15s; letter-spacing: 0.02em; }
+        .search-input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
         .search-input::placeholder { color: var(--ink-muted); }
+
+        .toolbar { display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem 2.5rem 0; max-width: 1500px; margin: 0 auto; }
+        .sort-label { font-size: 0.7rem; color: var(--ink-muted); font-weight: 500; letter-spacing: 0.12em; text-transform: uppercase; }
+        .sort-select { padding: 0.35rem 0.8rem; border: 1px solid var(--border); border-radius: 2px; font-family: 'EB Garamond', serif; font-size: 0.82rem; background: var(--surface2); color: var(--ink); cursor: pointer; outline: none; transition: border-color 0.15s; }
+        .sort-select:focus { border-color: var(--accent); }
+        .new-folder-btn { margin-left: auto; padding: 0.35rem 1rem; border: 1px solid var(--border); border-radius: 2px; background: none; font-family: 'EB Garamond', serif; font-size: 0.78rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-muted); cursor: pointer; transition: border-color 0.15s, color 0.15s; }
+        .new-folder-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+        .folder-group { margin: 1.5rem 2.5rem 0; max-width: 1500px; border: 1px dashed var(--border); border-radius: 2px; overflow: hidden; transition: border-color 0.15s; }
+        .folder-group.drag-over { border-color: var(--accent); background: var(--accent-soft); }
+        .folder-header { display: flex; align-items: center; gap: 0.6rem; padding: 0.8rem 1.25rem; cursor: pointer; background: var(--surface2); border-bottom: 1px solid var(--border); user-select: none; }
+        .folder-header:hover { background: var(--surface); }
+        .folder-name-text { font-family: 'Cormorant Garamond', serif; font-size: 1rem; font-weight: 600; flex: 1; letter-spacing: 0.02em; }
+        .folder-count { font-size: 0.68rem; color: var(--ink-muted); letter-spacing: 0.1em; text-transform: uppercase; }
+        .folder-chevron { font-size: 0.65rem; color: var(--ink-muted); transition: transform 0.2s; }
+        .folder-group.collapsed .folder-chevron { transform: rotate(-90deg); }
+        .folder-group.collapsed .folder-contents { display: none; }
+        .folder-contents { padding: 1rem 1.25rem; }
+        .folder-contents .notes-grid { padding: 0; }
+        .folder-contents .reminders-list { padding: 0; }
+        .delete-folder-btn { background: none; border: none; color: var(--ink-muted); font-size: 0.8rem; cursor: pointer; padding: 0.2rem 0.4rem; border-radius: 2px; transition: color 0.15s; }
+        .delete-folder-btn:hover { color: var(--accent); }
+        .folder-tag { font-size: 0.68rem; color: var(--accent); font-weight: 500; margin-top: auto; letter-spacing: 0.08em; text-transform: uppercase; }
+        .reminder-folder-tag { font-size: 0.68rem; color: var(--reminder); font-weight: 500; margin-top: 0.3rem; letter-spacing: 0.08em; text-transform: uppercase; }
+
+        .note-card.dragging, .reminder-card.dragging { opacity: 0.35; transform: scale(0.96); }
+        .note-card { position: relative; cursor: grab; }
+        .reminder-card { position: relative; }
+        .note-card:active { cursor: grabbing; }
+
+        .notes-grid.drop-active, .reminders-list.drop-active { outline: 2px dashed var(--accent); outline-offset: -4px; background: var(--accent-soft); transition: background 0.15s; }
+
+        .card-menu-btn { position: absolute; top: 0.6rem; right: 0.6rem; width: 24px; height: 24px; border-radius: 2px; background: var(--surface2); border: 1px solid var(--border); color: var(--ink-muted); font-size: 0.9rem; cursor: pointer; display: flex; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.15s; z-index: 10; }
+        .note-card:hover .card-menu-btn, .reminder-card:hover .card-menu-btn { opacity: 1; }
+        .card-menu-btn:hover { border-color: var(--accent); color: var(--accent); }
+        .card-menu-dropdown { position: absolute; top: 2.2rem; right: 0.5rem; background: var(--surface2); border: 1px solid var(--border-bright); border-radius: 2px; box-shadow: 0 12px 40px rgba(0,0,0,0.6); z-index: 20; overflow: hidden; min-width: 130px; }
+        .card-menu-dropdown button { display: flex; align-items: center; gap: 0.5rem; width: 100%; padding: 0.65rem 1rem; background: none; border: none; font-family: 'EB Garamond', serif; font-size: 0.85rem; color: var(--ink); cursor: pointer; text-align: left; transition: background 0.1s; letter-spacing: 0.02em; }
+        .card-menu-dropdown button:hover { background: var(--surface); }
+        .card-menu-dropdown button.danger { color: var(--accent); }
+
+        .confirm-dialog { background: var(--surface2); border: 1px solid var(--border-bright); border-radius: 4px; padding: 2.5rem; width: 360px; box-shadow: 0 40px 80px rgba(0,0,0,0.8); animation: slideUp 0.2s ease; text-align: center; }
+        .confirm-dialog p { font-family: 'Cormorant Garamond', serif; font-size: 1.2rem; font-weight: 300; letter-spacing: 0.04em; margin-bottom: 0.5rem; }
+        .confirm-dialog span { font-size: 0.75rem; color: var(--ink-muted); letter-spacing: 0.08em; text-transform: uppercase; }
+        .confirm-actions { display: flex; gap: 0.75rem; margin-top: 1.75rem; justify-content: center; }
+        .confirm-yes { background: var(--accent); color: var(--ink); border: none; padding: 0.6rem 1.75rem; border-radius: 2px; font-family: 'EB Garamond', serif; font-size: 0.8rem; font-weight: 500; letter-spacing: 0.12em; text-transform: uppercase; cursor: pointer; transition: opacity 0.15s, box-shadow 0.15s; }
+        .confirm-yes:hover { opacity: 0.85; box-shadow: 0 0 20px var(--accent-glow); }
+        .confirm-no { background: none; border: 1px solid var(--border); color: var(--ink-muted); padding: 0.6rem 1.75rem; border-radius: 2px; font-family: 'EB Garamond', serif; font-size: 0.8rem; letter-spacing: 0.12em; text-transform: uppercase; cursor: pointer; transition: border-color 0.15s; }
+        .confirm-no:hover { border-color: var(--border-bright); }
+
+        .share-dialog { background: var(--surface2); border: 1px solid var(--border-bright); border-radius: 4px; padding: 2.5rem; width: 400px; box-shadow: 0 40px 80px rgba(0,0,0,0.8); animation: slideUp 0.2s ease; }
+        .share-dialog h3 { font-family: 'Cormorant Garamond', serif; font-size: 1.2rem; font-weight: 300; letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 1.5rem; }
+        .share-input { width: 100%; padding: 0.7rem 1rem; border: 1px solid var(--border); border-radius: 2px; font-family: 'EB Garamond', serif; font-size: 0.95rem; font-style: italic; background: var(--surface); color: var(--ink); outline: none; margin-bottom: 1.25rem; transition: border-color 0.15s; }
+        .share-input:focus { border-color: var(--accent); }
+        .share-input::placeholder { color: var(--ink-muted); }
+        .share-actions { display: flex; gap: 0.75rem; justify-content: flex-end; }
+        .share-btn { background: var(--accent); color: var(--ink); border: none; padding: 0.6rem 1.5rem; border-radius: 2px; font-family: 'EB Garamond', serif; font-size: 0.8rem; font-weight: 500; letter-spacing: 0.12em; text-transform: uppercase; cursor: pointer; transition: opacity 0.15s, box-shadow 0.15s; }
+        .share-btn:hover { opacity: 0.85; box-shadow: 0 0 20px var(--accent-glow); }
+        .share-cancel { background: none; border: 1px solid var(--border); color: var(--ink-muted); padding: 0.6rem 1.5rem; border-radius: 2px; font-family: 'EB Garamond', serif; font-size: 0.8rem; letter-spacing: 0.12em; text-transform: uppercase; cursor: pointer; transition: border-color 0.15s; }
+        .share-cancel:hover { border-color: var(--border-bright); }
     </style>
 </head>
 <body>
@@ -380,9 +200,37 @@
     </div>
 </div>
 
+<!-- confirm delete dialog -->
+<div class="overlay" id="confirmOverlay">
+    <div class="confirm-dialog">
+        <p>Delete this?</p>
+        <span>This action cannot be undone.</span>
+        <div class="confirm-actions">
+            <button class="confirm-yes" id="confirmYesBtn">Delete</button>
+            <button class="confirm-no" onclick="closeConfirm()">Cancel</button>
+        </div>
+    </div>
+</div>
+
+<!-- share dialog -->
+<div class="overlay" id="shareOverlay">
+    <div class="share-dialog">
+        <h3>Share via Email</h3>
+        <input class="share-input" type="email" id="shareRecipient" placeholder="Recipient email address..."/>
+        <div class="share-actions">
+            <button class="share-cancel" onclick="closeShare()">Cancel</button>
+            <button class="share-btn" id="shareConfirmBtn">Open in Gmail</button>
+        </div>
+    </div>
+</div>
+
 <!-- ── HEADER ── -->
 <header>
     <h1>My Workspace</h1>
+    <div class="header-clock">
+        <span class="clock-time" id="clockTime">--:--</span>
+        <span class="clock-date" id="clockDate">---</span>
+    </div>
     <button class="add-btn" onclick="openChooser()" title="Create new">+</button>
 </header>
 
@@ -395,39 +243,79 @@
 <!-- ── NOTES TAB ── -->
 <div class="tab-panel active" id="tab-notes">
     <div class="search-wrapper">
-        <input type="text" id="searchBar" class="search-input" placeholder="Search notes...">
+        <input type="text" id="searchBar" class="search-input" placeholder="Search notes or folders...">
     </div>
-    <div class="notes-grid" id="notesGrid">
-        <a th:each="note : ${notes}" th:href="@{/notes/{id}/edit(id=${note.id})}" class="note-card">
+    <div class="toolbar">
+        <span class="sort-label">Sort by</span>
+        <select class="sort-select" id="noteSort" onchange="sortNotes(this.value)">
+            <option value="latest">Latest</option>
+            <option value="oldest">Oldest</option>
+            <option value="az">A-Z</option>
+        </select>
+        <button class="new-folder-btn" onclick="createFolder('note')">&#128193; New Folder</button>
+    </div>
+    <div class="notes-grid" id="notesGrid" style="padding-top:1.25rem;" ondragover="handleMainGridDragOver(event, this)" ondragleave="handleMainGridDragLeave(event, this)" ondrop="handleMainGridDrop(event, this, 'note')">
+        <a th:each="note : ${notes}"
+           th:href="@{/notes/{id}/edit(id=${note.id})}"
+           class="note-card"
+           th:attr="data-id=${note.id},data-created=${note.createdAt},data-folder=${note.folder}"
+           draggable="true">
+            <button class="card-menu-btn" th:attr="data-id=${note.id}" onclick="event.preventDefault(); toggleMenu(this, 'note')">&#8942;</button>
+            <div class="card-menu-dropdown" style="display:none">
+                <button onclick="event.preventDefault(); closeAllMenus(); openShare(this.closest('.note-card').dataset.id, 'note')">&#128231; Share</button>
+                <button class="danger" onclick="event.preventDefault(); closeAllMenus(); openConfirmFromMenu(this.closest('.note-card').dataset.id, 'note', this.closest('.note-card'))">&#128465; Delete</button>
+            </div>
             <h2 th:text="${note.title}">Note Title</h2>
             <p th:text="${note.content}">Note preview...</p>
+            <span class="folder-tag" th:if="${note.folder != null and note.folder != ''}" th:text="'&#128193; ' + ${note.folder}"></span>
         </a>
         <div class="empty-state" th:if="${#lists.isEmpty(notes)}">
             <p>No notes yet.</p>
             <span>Click + to create your first one.</span>
         </div>
     </div>
+    <div id="noteFolderContainer"></div>
 </div>
 
 <!-- ── REMINDERS TAB ── -->
 <div class="tab-panel" id="tab-reminders">
     <div class="search-wrapper">
-        <input type="text" id="reminderSearchBar" class="search-input" placeholder="Search reminders...">
+        <input type="text" id="reminderSearchBar" class="search-input" placeholder="Search reminders or folders...">
     </div>
-    <div class="reminders-list" id="remindersGrid">
-        <div th:each="reminder : ${reminders}" class="reminder-card">
+    <div class="toolbar">
+        <span class="sort-label">Sort by</span>
+        <select class="sort-select" id="reminderSort" onchange="sortReminders(this.value)">
+            <option value="latest">Latest</option>
+            <option value="oldest">Oldest</option>
+            <option value="az">A-Z</option>
+            <option value="dueDate">Due Date</option>
+        </select>
+        <button class="new-folder-btn" onclick="createFolder('reminder')">&#128193; New Folder</button>
+    </div>
+    <div class="reminders-list" id="remindersGrid" style="padding-top:1.25rem;" ondragover="handleMainGridDragOver(event, this)" ondragleave="handleMainGridDragLeave(event, this)" ondrop="handleMainGridDrop(event, this, 'reminder')">
+        <div th:each="reminder : ${reminders}"
+             class="reminder-card"
+             th:attr="data-id=${reminder.id},data-created=${reminder.createdAt},data-due=${reminder.dueDate},data-folder=${reminder.folder}">
+            <button class="card-menu-btn" th:attr="data-id=${reminder.id}" onclick="toggleMenu(this, 'reminder')">&#8942;</button>
+            <div class="card-menu-dropdown" style="display:none">
+                <button onclick="closeAllMenus(); openShare(this.closest('.reminder-card').dataset.id, 'reminder')">&#128231; Share</button>
+                <button class="danger" onclick="closeAllMenus(); openConfirmFromMenu(this.closest('.reminder-card').dataset.id, 'reminder', this.closest('.reminder-card'))">&#128465; Delete</button>
+            </div>
             <h3 th:text="${reminder.title}">Reminder title</h3>
             <p th:text="${reminder.content}">Content</p>
             <div class="reminder-due" th:text="${reminder.dueDate}">Due date</div>
+            <span class="reminder-folder-tag" th:if="${reminder.folder != null and reminder.folder != ''}" th:text="'&#128193; ' + ${reminder.folder}"></span>
         </div>
         <div class="empty-state" th:if="${#lists.isEmpty(reminders)}">
             <p>No reminders yet.</p>
             <span>Click + to add one.</span>
         </div>
     </div>
+    <div id="reminderFolderContainer"></div>
 </div>
 
 <script th:inline="javascript">
+    // ── TAB SWITCHING ──
     function switchTab(name, btn) {
         document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
         document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
@@ -435,86 +323,451 @@
         btn.classList.add('active');
     }
 
-    function openChooser() {
-        document.getElementById('chooserOverlay').classList.add('visible');
-    }
+    function openChooser() { document.getElementById('chooserOverlay').classList.add('visible'); }
+    function closeChooser() { document.getElementById('chooserOverlay').classList.remove('visible'); }
+    function closeReminderModal() { document.getElementById('reminderOverlay').classList.remove('visible'); }
 
-    function closeChooser() {
-        document.getElementById('chooserOverlay').classList.remove('visible');
-    }
-
-    function closeReminderModal() {
-        document.getElementById('reminderOverlay').classList.remove('visible');
-    }
-
-    // Auto-show reminder modal on page load if reminders exist
     window.addEventListener('DOMContentLoaded', () => {
         const hasReminders = /*[[${!#lists.isEmpty(reminders)}]]*/ false;
-        if (hasReminders) {
-            document.getElementById('reminderOverlay').classList.add('visible');
-        }
+        if (hasReminders) document.getElementById('reminderOverlay').classList.add('visible');
+        initDragAndDrop();
+        groupExistingFolders();
     });
+
+    // ── CLOCK ──
+    function updateClock() {
+        const now = new Date();
+        document.getElementById('clockTime').textContent = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true });
+        document.getElementById('clockDate').textContent = now.toLocaleDateString([], { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' });
+    }
+    updateClock();
+    setInterval(updateClock, 1000);
+
+    // ── CSRF ──
+    function getCsrf() {
+        return {
+            token: document.querySelector('meta[name="_csrf"]')?.getAttribute('content'),
+            header: document.querySelector('meta[name="_csrf_header"]')?.getAttribute('content')
+        };
+    }
+
+    // ── THREE DOT MENU ──
+    function toggleMenu(btn, type) {
+        const dropdown = btn.nextElementSibling;
+        const isVisible = dropdown.style.display === 'block';
+        closeAllMenus();
+        if (!isVisible) dropdown.style.display = 'block';
+    }
+
+    function closeAllMenus() {
+        document.querySelectorAll('.card-menu-dropdown').forEach(d => d.style.display = 'none');
+    }
+
+    document.addEventListener('click', e => {
+        if (!e.target.closest('.card-menu-btn') && !e.target.closest('.card-menu-dropdown')) closeAllMenus();
+    });
+
+    // ── SHARE ──
+    let pendingShareId = null;
+    let pendingShareType = null;
+
+    function openShare(id, type) {
+        pendingShareId = id;
+        pendingShareType = type;
+        document.getElementById('shareRecipient').value = '';
+        document.getElementById('shareOverlay').classList.add('visible');
+    }
+
+    function closeShare() {
+        pendingShareId = null;
+        pendingShareType = null;
+        document.getElementById('shareOverlay').classList.remove('visible');
+    }
+
+    document.getElementById('shareConfirmBtn').addEventListener('click', function () {
+        const recipient = document.getElementById('shareRecipient').value.trim();
+        if (!recipient) { alert('Please enter a recipient email.'); return; }
+        if (!pendingShareId || !pendingShareType) return;
+        fetch(`/${pendingShareType === 'note' ? 'notes' : 'reminders'}/${pendingShareId}/json`)
+            .then(r => r.json())
+            .then(item => {
+                const subject = encodeURIComponent((pendingShareType === 'note' ? 'Note: ' : 'Reminder: ') + item.title);
+                const body = pendingShareType === 'reminder'
+                    ? encodeURIComponent(`${item.content}
+
+Due: ${item.dueDate || 'No due date'}`)
+                    : encodeURIComponent(item.content || '');
+                window.open(`https://mail.google.com/mail/?view=cm&to=${encodeURIComponent(recipient)}&su=${subject}&body=${body}`, '_blank');
+                closeShare();
+            })
+            .catch(() => alert('Something went wrong. Please try again.'));
+    });
+
+    // ── FOLDER CREATION ──
+    function createFolder(type) {
+        const name = prompt('Folder name:');
+        if (!name || !name.trim()) return;
+        const container = document.getElementById(type === 'note' ? 'noteFolderContainer' : 'reminderFolderContainer');
+        const innerClass = type === 'note' ? 'notes-grid' : 'reminders-list';
+        const group = document.createElement('div');
+        group.className = 'folder-group';
+        group.dataset.folder = name.trim();
+        group.dataset.type = type;
+        group.innerHTML = `
+            <div class="folder-header" onclick="toggleFolder(this.parentElement)">
+                <span>&#128193;</span>
+                <span class="folder-name-text">${name.trim()}</span>
+                <span class="folder-count">0 items</span>
+                <span class="folder-chevron">&#9660;</span>
+                <button class="delete-folder-btn" onclick="event.stopPropagation(); deleteFolder(this.parentElement.parentElement)">&#x2715;</button>
+            </div>
+            <div class="folder-contents"><div class="${innerClass} folder-inner"></div></div>`;
+        container.appendChild(group);
+        initFolderDropZone(group);
+    }
+
+    // ── GROUP EXISTING FOLDERS ON PAGE LOAD ──
+    function groupExistingFolders() {
+        groupCardsIntoFolders('#notesGrid .note-card[data-folder]', 'noteFolderContainer', 'note', 'notes-grid');
+        groupCardsIntoFolders('#remindersGrid .reminder-card[data-folder]', 'reminderFolderContainer', 'reminder', 'reminders-list');
+    }
+
+    function groupCardsIntoFolders(selector, containerId, type, innerClass) {
+        const cards = Array.from(document.querySelectorAll(selector))
+            .filter(c => c.dataset.folder && c.dataset.folder !== 'null' && c.dataset.folder !== '');
+        if (!cards.length) return;
+        const container = document.getElementById(containerId);
+        const groups = new Map();
+        cards.forEach(card => {
+            const f = card.dataset.folder;
+            if (!groups.has(f)) groups.set(f, []);
+            groups.get(f).push(card);
+        });
+        groups.forEach((groupCards, folderName) => {
+            const group = document.createElement('div');
+            group.className = 'folder-group';
+            group.dataset.folder = folderName;
+            group.dataset.type = type;
+            group.innerHTML = `
+                <div class="folder-header" onclick="toggleFolder(this.parentElement)">
+                    <span>&#128193;</span>
+                    <span class="folder-name-text">${folderName}</span>
+                    <span class="folder-count">${groupCards.length} item${groupCards.length !== 1 ? 's' : ''}</span>
+                    <span class="folder-chevron">&#9660;</span>
+                    <button class="delete-folder-btn" onclick="event.stopPropagation(); deleteFolder(this.parentElement.parentElement)">&#x2715;</button>
+                </div>
+                <div class="folder-contents"><div class="${innerClass} folder-inner"></div></div>`;
+            const inner = group.querySelector('.folder-inner');
+            groupCards.forEach(card => { card.parentElement.removeChild(card); inner.appendChild(card); });
+            container.appendChild(group);
+            initFolderDropZone(group);
+        });
+    }
+
+    function toggleFolder(groupEl) { groupEl.classList.toggle('collapsed'); }
+
+    function deleteFolder(groupEl) {
+        const type = groupEl.dataset.type;
+        const grid = document.getElementById(type === 'note' ? 'notesGrid' : 'remindersGrid');
+        Array.from(groupEl.querySelectorAll('.note-card, .reminder-card')).forEach(card => {
+            card.dataset.folder = '';
+            const tag = card.querySelector('.folder-tag, .reminder-folder-tag');
+            if (tag) tag.remove();
+            grid.appendChild(card);
+            updateCardFolder(card, '');
+        });
+        groupEl.remove();
+    }
+
+    // ── DRAG AND DROP ──
+    function initDragAndDrop() {
+        document.querySelectorAll('.note-card, .reminder-card').forEach(card => makeDraggable(card));
+        // Make the main grids drop zones so cards can be dragged OUT of folders
+        initMainGridDropZone(document.getElementById('notesGrid'), 'note');
+        initMainGridDropZone(document.getElementById('remindersGrid'), 'reminder');
+    }
+
+    function makeDraggable(card) {
+        card.setAttribute('draggable', 'true');
+        card.addEventListener('dragstart', e => {
+            card.classList.add('dragging');
+            window._draggingCard = card;
+        });
+        card.addEventListener('dragend', () => {
+            card.classList.remove('dragging');
+            window._draggingCard = null;
+            // Remove any drop-over styling from grids
+            document.getElementById('notesGrid').classList.remove('drag-over');
+            document.getElementById('remindersGrid').classList.remove('drag-over');
+        });
+    }
+
+    // initMainGridDropZone adds drag-over and drop listeners to the main unfoldered grid.
+    // When a card is dropped here, it is removed from whatever folder it was in
+    // and its folder field is cleared both visually and in the backend.
+    function initMainGridDropZone(grid, type) {
+        grid.addEventListener('dragover', e => {
+            e.preventDefault();
+            const card = window._draggingCard;
+            if (!card) return;
+            const cardType = card.classList.contains('note-card') ? 'note' : 'reminder';
+            // Only show drop indicator if the card type matches this grid
+            if (cardType === type) grid.style.outline = '2px dashed var(--accent)';
+        });
+
+        grid.addEventListener('dragleave', e => {
+            // Only clear if leaving the grid entirely
+            if (!grid.contains(e.relatedTarget)) grid.style.outline = '';
+        });
+
+        grid.addEventListener('drop', e => {
+            e.preventDefault();
+            grid.style.outline = '';
+            const card = window._draggingCard;
+            if (!card) return;
+
+            const cardType = card.classList.contains('note-card') ? 'note' : 'reminder';
+            if (cardType !== type) return;
+
+            // Check if the card was actually inside a folder — if not, nothing to do
+            const parentFolder = card.closest('.folder-group');
+            if (!parentFolder) return;
+
+            // Update folder count on the folder it came from
+            updateFolderCount(parentFolder);
+
+            // Move card to main grid and clear its folder
+            card.dataset.folder = '';
+            const tag = card.querySelector('.folder-tag, .reminder-folder-tag');
+            if (tag) tag.remove();
+            grid.appendChild(card);
+
+            // Persist the cleared folder to the backend
+            updateCardFolder(card, '');
+        });
+    }
+
+    function initFolderDropZone(group) {
+        group.addEventListener('dragover', e => { e.preventDefault(); group.classList.add('drag-over'); });
+        group.addEventListener('dragleave', e => { if (!group.contains(e.relatedTarget)) group.classList.remove('drag-over'); });
+        group.addEventListener('drop', e => {
+            e.preventDefault();
+            group.classList.remove('drag-over');
+            const card = window._draggingCard;
+            if (!card) return;
+            const cardType = card.classList.contains('note-card') ? 'note' : 'reminder';
+            if (cardType !== group.dataset.type) return;
+            const folderName = group.dataset.folder;
+            const inner = group.querySelector('.folder-inner');
+            card.dataset.folder = folderName;
+            inner.appendChild(card);
+            let tag = card.querySelector('.folder-tag, .reminder-folder-tag');
+            if (!tag) {
+                tag = document.createElement('span');
+                tag.className = cardType === 'note' ? 'folder-tag' : 'reminder-folder-tag';
+                card.appendChild(tag);
+            }
+            tag.textContent = '📁 ' + folderName;
+            updateFolderCount(group);
+            updateCardFolder(card, folderName);
+        });
+    }
+
+    function updateCardFolder(card, folderName) {
+        const id = card.dataset.id;
+        const type = card.classList.contains('note-card') ? 'note' : 'reminder';
+        const csrf = getCsrf();
+        fetch(`/${type === 'note' ? 'notes' : 'reminders'}/${id}/folder`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded', [csrf.header]: csrf.token },
+            body: `folder=${encodeURIComponent(folderName)}`
+        }).catch(err => console.error('Failed to update folder:', err));
+    }
+
+    function updateFolderCount(group) {
+        const count = group.querySelectorAll('.note-card, .reminder-card').length;
+        const el = group.querySelector('.folder-count');
+        if (el) el.textContent = `${count} item${count !== 1 ? 's' : ''}`;
+    }
+
+    // ── DRAG OUT OF FOLDER ──
+    // These three handlers manage dropping a card onto the main grid
+    // which removes it from any folder it was in.
+
+    function handleMainGridDragOver(e, grid) {
+        e.preventDefault();
+        // Only show the drop zone highlight if the dragging card is currently inside a folder
+        // — no point highlighting if the card is already in the main grid
+        const card = window._draggingCard;
+        if (card && card.closest('.folder-group')) {
+            grid.classList.add('drop-active');
+        }
+    }
+
+    function handleMainGridDragLeave(e, grid) {
+        // relatedTarget is where the mouse moved to — if it's still inside the grid don't remove highlight
+        if (!grid.contains(e.relatedTarget)) {
+            grid.classList.remove('drop-active');
+        }
+    }
+
+    function handleMainGridDrop(e, grid, type) {
+        e.preventDefault();
+        grid.classList.remove('drop-active');
+
+        const card = window._draggingCard;
+        if (!card) return;
+
+        // Only handle if card came from inside a folder
+        const parentFolder = card.closest('.folder-group');
+        if (!parentFolder) return;
+
+        // Only allow dropping notes on note grid and reminders on reminder grid
+        const cardType = card.classList.contains('note-card') ? 'note' : 'reminder';
+        if (cardType !== type) return;
+
+        // Remove folder tag badge from the card
+        const tag = card.querySelector('.folder-tag, .reminder-folder-tag');
+        if (tag) tag.remove();
+
+        // Clear data attribute
+        card.dataset.folder = '';
+
+        // Move card to the main grid
+        grid.appendChild(card);
+
+        // Update folder count on the folder it left
+        updateFolderCount(parentFolder);
+
+        // Persist the empty folder to the backend — same endpoint, empty string clears it
+        updateCardFolder(card, '');
+    }
 
     // ── SEARCH ──
     const searchBar = document.getElementById('searchBar');
     const notesGrid = document.getElementById('notesGrid');
+    const originalNotes = notesGrid.innerHTML;
 
     searchBar.addEventListener('input', function () {
-        const keyword = this.value;
-
-        if (keyword.trim() === '') {
-            location.reload();
-            return;
-        }
-
+        const keyword = this.value.trim();
+        if (keyword === '') { notesGrid.innerHTML = originalNotes; initDragAndDrop(); return; }
         fetch(`/notes/search?keyword=${encodeURIComponent(keyword)}`)
-            .then(response => response.json())
+            .then(r => { if (!r.ok) throw new Error(); return r.json(); })
             .then(notes => {
                 notesGrid.innerHTML = notes.length
-                    ? notes.map(note => `
-                        <a href="/notes/${note.id}/edit" class="note-card">
-                            <h2>${note.title}</h2>
-                            <p>${note.content}</p>
+                    ? notes.map(n => `
+                        <a href="/notes/${n.id}/edit" class="note-card" data-id="${n.id}" data-created="${n.createdAt||''}" data-folder="${n.folder||''}" draggable="true">
+                            <button class="card-menu-btn" data-id="${n.id}" onclick="event.preventDefault(); toggleMenu(this,'note')">&#8942;</button>
+                            <div class="card-menu-dropdown" style="display:none">
+                                <button onclick="event.preventDefault();closeAllMenus();openShare('${n.id}','note')">&#128231; Share</button>
+                                <button class="danger" onclick="event.preventDefault();closeAllMenus();openConfirmFromMenu('${n.id}','note',this.closest('.note-card'))">&#128465; Delete</button>
+                            </div>
+                            <h2>${n.title}</h2><p>${n.content}</p>
+                            ${n.folder ? `<span class="folder-tag">&#128193; ${n.folder}</span>` : ''}
                         </a>`).join('')
-                    : `<div class="empty-state">
-                            <p>No notes found.</p>
-                            <span>Try a different search term.</span>
-                       </div>`;
-            });
+                    : `<div class="empty-state"><p>No notes found.</p><span>Try a different search term.</span></div>`;
+                initDragAndDrop();
+            })
+            .catch(() => { notesGrid.innerHTML = `<div class="empty-state"><p>Something went wrong.</p></div>`; });
     });
 
-
-    // ── REMINDER SEARCH ──
     const reminderSearchBar = document.getElementById('reminderSearchBar');
     const remindersGrid = document.getElementById('remindersGrid');
+    const originalReminders = remindersGrid.innerHTML;
 
     reminderSearchBar.addEventListener('input', function () {
-        const keyword = this.value;
-
-        if (keyword.trim() === '') {
-            location.reload();
-            return;
-        }
-
+        const keyword = this.value.trim();
+        if (keyword === '') { remindersGrid.innerHTML = originalReminders; return; }
         fetch(`/reminders/search?keyword=${encodeURIComponent(keyword)}`)
-            .then(response => response.json())
+            .then(r => { if (!r.ok) throw new Error(); return r.json(); })
             .then(reminders => {
                 remindersGrid.innerHTML = reminders.length
-                    ? reminders.map(reminder => `
-                        <div class="reminder-card">
-                            <h3>${reminder.title}</h3>
-                            <p>${reminder.content}</p>
-                            <div class="reminder-due">${reminder.dueDate}</div>
+                    ? reminders.map(r => `
+                        <div class="reminder-card" data-id="${r.id}" data-created="${r.createdAt||''}" data-due="${r.dueDate||''}" data-folder="${r.folder||''}">
+                            <button class="card-menu-btn" data-id="${r.id}" onclick="toggleMenu(this,'reminder')">&#8942;</button>
+                            <div class="card-menu-dropdown" style="display:none">
+                                <button onclick="closeAllMenus();openShare('${r.id}','reminder')">&#128231; Share</button>
+                                <button class="danger" onclick="closeAllMenus();openConfirmFromMenu('${r.id}','reminder',this.closest('.reminder-card'))">&#128465; Delete</button>
+                            </div>
+                            <h3>${r.title}</h3><p>${r.content}</p>
+                            <div class="reminder-due">${r.dueDate||''}</div>
+                            ${r.folder ? `<span class="reminder-folder-tag">&#128193; ${r.folder}</span>` : ''}
                         </div>`).join('')
-                    : `<div class="empty-state">
-                            <p>No reminders found.</p>
-                            <span>Try a different search term.</span>
-                       </div>`;
-            });
+                    : `<div class="empty-state"><p>No reminders found.</p><span>Try a different search term.</span></div>`;
+            })
+            .catch(() => { remindersGrid.innerHTML = `<div class="empty-state"><p>Something went wrong.</p></div>`; });
+    });
+
+    // ── SORT ──
+    function sortNotes(order) {
+        const cards = Array.from(document.querySelectorAll('#notesGrid .note-card'));
+        if (!cards.length) return;
+        cards.sort((a, b) => {
+            if (order === 'az') return a.querySelector('h2').textContent.localeCompare(b.querySelector('h2').textContent);
+            const da = new Date(a.dataset.created||0), db = new Date(b.dataset.created||0);
+            return order === 'latest' ? db - da : da - db;
+        });
+        const flat = document.createElement('div');
+        flat.className = 'notes-grid';
+        cards.forEach(c => flat.appendChild(c));
+        notesGrid.innerHTML = '';
+        notesGrid.appendChild(flat);
+        initDragAndDrop();
+    }
+
+    function sortReminders(order) {
+        const cards = Array.from(document.querySelectorAll('#remindersGrid .reminder-card'));
+        if (!cards.length) return;
+        cards.sort((a, b) => {
+            if (order === 'az') return a.querySelector('h3').textContent.localeCompare(b.querySelector('h3').textContent);
+            if (order === 'dueDate') return new Date(a.dataset.due||0) - new Date(b.dataset.due||0);
+            const da = new Date(a.dataset.created||0), db = new Date(b.dataset.created||0);
+            return order === 'latest' ? db - da : da - db;
+        });
+        const flat = document.createElement('div');
+        flat.className = 'reminders-list';
+        cards.forEach(c => flat.appendChild(c));
+        remindersGrid.innerHTML = '';
+        remindersGrid.appendChild(flat);
+    }
+
+    // ── CONFIRM DELETE ──
+    let pendingDeleteId = null;
+    let pendingDeleteType = null;
+    let pendingCard = null;
+
+    function openConfirmFromMenu(id, type, card) {
+        pendingDeleteId = id;
+        pendingDeleteType = type;
+        pendingCard = card;
+        document.getElementById('confirmOverlay').classList.add('visible');
+    }
+
+    function closeConfirm() {
+        pendingDeleteId = null;
+        pendingDeleteType = null;
+        pendingCard = null;
+        document.getElementById('confirmOverlay').classList.remove('visible');
+    }
+
+    document.getElementById('confirmYesBtn').addEventListener('click', function () {
+        if (!pendingDeleteId || !pendingDeleteType) return;
+        const url = `/${pendingDeleteType === 'note' ? 'notes' : 'reminders'}/${pendingDeleteId}/delete`;
+        const csrf = getCsrf();
+        fetch(url, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded', [csrf.header]: csrf.token },
+            body: '_method=delete'
+        }).then(() => {
+            const group = pendingCard?.closest('.folder-group');
+            if (pendingCard) pendingCard.remove();
+            if (group) updateFolderCount(group);
+            closeConfirm();
+        }).catch(err => { console.error('Delete failed:', err); closeConfirm(); });
     });
 
     document.querySelectorAll('.overlay').forEach(overlay => {
-        overlay.addEventListener('click', (e) => {
+        overlay.addEventListener('click', e => {
             if (e.target === overlay) overlay.classList.remove('visible');
         });
     });
@@ -522,3 +775,4 @@
 
 </body>
 </html>
+

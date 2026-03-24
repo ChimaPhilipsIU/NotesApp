@@ -17,6 +17,10 @@ public class Reminder {
 
     private LocalDateTime dueDate;
 
+    private LocalDateTime createdAt;
+
+    private String folder;
+
     public Long getId() {
         return id;
     }
@@ -36,9 +40,10 @@ public class Reminder {
 
     public LocalDateTime getDueDate() {
     return dueDate;
-}
 
-public void setDueDate(LocalDateTime dueDate) {
+    }
+    
+    public void setDueDate(LocalDateTime dueDate) {
     this.dueDate = dueDate;
 }
 
@@ -50,4 +55,22 @@ public void setDueDate(LocalDateTime dueDate) {
     public void setContent(String content) {
         this.content = content;
     }
+
+    public LocalDateTime getCreatedAt(){
+        return createdAt;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt){
+        this.createdAt = createdAt;
+    }
+
+    public String getFolder() { 
+        return folder; 
+        }
+    
+    public void setFolder(String folder) { 
+        this.folder = folder; 
+        }
+
+
 }
