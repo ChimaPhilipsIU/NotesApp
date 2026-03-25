@@ -82,7 +82,7 @@ http://localhost:8081
 
 **Default credentials**
 ```
-Username: Chima
+Username: User
 Password: Password1@
 ```
 
